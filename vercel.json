@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "functions": {
+    "api/treehole-chat.js": {
+      "maxDuration": 60
+    },
+    "api/habit-plan.js": {
+      "maxDuration": 30
+    },
+    "api/asr.js": {
+      "maxDuration": 30
+    }
+  }
+}

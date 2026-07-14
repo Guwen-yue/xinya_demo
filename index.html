@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#587A64" />
+  <title>心芽守护 — 青少年 AI 情绪陪伴与成长守护</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- 图表：ECharts CDN；离线时 script.js 会降级为 SVG 模拟 -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+</head>
+<body>
+  <!-- ===== SVG 图标精灵：定义一次，全站通过 <use> 引用 ===== -->
+  <svg class="icon-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M4.2 19.8l1.8-1.8M18 6l1.8-1.8"/></symbol>
+    <symbol id="icon-cloud-sun" viewBox="0 0 24 24"><circle cx="8" cy="8" r="3"/><path d="M8 1.5V3M8 13v1.5M1.5 8H3M13 8h1.5M3.2 3.2l1 1M11.8 4.2l1-1"/><path d="M18 14h-1.26A4 4 0 1 0 11 18h7a3 3 0 0 0 0-4z"/></symbol>
+    <symbol id="icon-cloud-rain" viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M8 19v2.5M12 19v3M16 19v2.5"/></symbol>
+    <symbol id="icon-cloud-storm" viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M12 13l-2 4h3l-2 4"/></symbol>
+    <symbol id="icon-sprout" viewBox="0 0 24 24"><path d="M7 20h10"/><path d="M12 20v-8"/><path d="M12 12c0-3-2.5-5-6-5 0 3 2.5 5 6 5z"/><path d="M12 10c0-3 2.5-5 6-5 0 3-2.5 5-6 5z"/></symbol>
+    <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></symbol>
+    <symbol id="icon-sparkles" viewBox="0 0 24 24"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M18 15l.8 2.2L21 18l-2.2.8L18 21l-.8-2.2L15 18l2.2-.8z"/></symbol>
+    <symbol id="icon-star" viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.8l-5.8 3.1 1.1-6.5L2.6 9.8l6.5-.9z"/></symbol>
+    <symbol id="icon-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></symbol>
+    <symbol id="icon-wave" viewBox="0 0 24 24"><path d="M2 8c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/><path d="M2 16c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/></symbol>
+    <symbol id="icon-leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 4 13c0-5 4-9 16-9 0 12-4 16-9 16z"/><path d="M4 20c4-6 8-8 12-9"/></symbol>
+    <symbol id="icon-music" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></symbol>
+    <symbol id="icon-headphones" viewBox="0 0 24 24"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><path d="M21 14v4a2 2 0 0 1-2 2h-1v-6h3z"/><path d="M3 14v4a2 2 0 0 0 2 2h1v-6H3z"/></symbol>
+    <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="icon-phone" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2z"/></symbol>
+    <symbol id="icon-school" viewBox="0 0 24 24"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></symbol>
+    <symbol id="icon-sos" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+    <symbol id="icon-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
+  </svg>
+
+  <div class="app">
+
+    <!-- ===== 顶部 Header ===== -->
+    <header class="app-header">
+      <div class="brand-lockup">
+        <span class="brand-mark" aria-hidden="true">芽</span>
+        <div class="header-titles">
+          <p class="header-kicker">AI 情绪陪伴 Demo</p>
+          <h1 class="brand">心芽守护</h1>
+          <p class="tagline">私密树洞 · 成长守护 · 温和提醒</p>
+        </div>
+      </div>
+      <button id="help-btn" class="help-btn" aria-label="一键求助"><span aria-hidden="true">!</span><b>求助</b></button>
+    </header>
+
+    <!-- ===== 端口切换 Tab ===== -->
+    <nav class="port-tabs" role="tablist">
+      <button class="tab active" data-port="student" role="tab" aria-selected="true">学生端</button>
+      <button class="tab" data-port="parent" role="tab" aria-selected="false">家长端</button>
+      <button class="tab" data-port="teacher" role="tab" aria-selected="false">教师端</button>
+      <button class="tab" data-port="demo" role="tab" aria-selected="false">演示流</button>
+    </nav>
+
+    <main class="panels">
+
+      <!-- ============ 学生端 ============ -->
+      <section id="panel-student" class="panel active">
+
+        <!-- 学生端模块子 Tab -->
+        <nav class="sub-tabs">
+          <button class="subtab active" data-module="treehole" aria-selected="true">AI 暖心树洞</button>
+          <button class="subtab" data-module="mood" aria-selected="false">心情天气</button>
+          <button class="subtab" data-module="habit" aria-selected="false">好习惯计划</button>
+          <button class="subtab" data-module="relax" aria-selected="false">减压宝库</button>
+        </nav>
+
+        <!-- 模块 1：AI 暖心树洞 -->
+        <div id="mod-treehole" class="sub-panel active">
+          <div class="privacy-tag">本地保存 · 树洞原文不对家长/老师开放</div>
+
+          <div id="treehole-emotion" class="emotion-box" hidden>
+            <div class="emotion-tags" id="emotion-tags"></div>
+            <div class="intensity-row">
+              <span class="intensity-label">情绪强度</span>
+              <div class="intensity-bar"><div id="intensity-fill"></div></div>
+              <span id="intensity-text"></span>
+            </div>
+            <div id="emotion-suggestions" class="suggestions"></div>
+          </div>
+
+          <div id="treehole-log" class="chat-log">
+            <div class="bubble ai">你好呀，我是心芽。可以把今天不舒服的事写在这里，我会认真听。</div>
+          </div>
+
+          <div class="chat-input">
+            <textarea id="treehole-input" rows="2" placeholder="可以把今天不舒服的事写在这里，我会认真听……"></textarea>
+            <div class="chat-actions">
+              <button id="btn-voice" class="btn ghost">语音倾诉</button>
+              <button id="btn-clear-treehole" class="btn ghost danger">一键清空记录</button>
+              <button id="btn-send" class="btn primary">发送</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 模块 2：心情天气打卡与趋势 -->
+        <div id="mod-mood" class="sub-panel">
+          <div class="privacy-tag">本地保存 · 仅生成脱敏趋势</div>
+
+          <div class="card">
+            <h3 class="card-title">今天的心情天气</h3>
+            <div class="weather-row">
+              <button class="weather-btn" data-w="晴天" data-score="8"><svg class="icon"><use href="#icon-sun"/></svg> 晴天</button>
+              <button class="weather-btn" data-w="多云" data-score="6"><svg class="icon"><use href="#icon-cloud-sun"/></svg> 多云</button>
+              <button class="weather-btn" data-w="小雨" data-score="4"><svg class="icon"><use href="#icon-cloud-rain"/></svg> 小雨</button>
+              <button class="weather-btn" data-w="暴雨" data-score="2"><svg class="icon"><use href="#icon-cloud-storm"/></svg> 暴雨</button>
+            </div>
+            <input id="mood-note" class="input" type="text" placeholder="一句今日心情（可选）" />
+            <p class="sub-label">压力来源（可多选）</p>
+            <div class="tag-row">
+              <button class="stress-tag" data-stress="刷题">刷题</button>
+              <button class="stress-tag" data-stress="熬夜">熬夜</button>
+              <button class="stress-tag" data-stress="亲子争吵">亲子争吵</button>
+              <button class="stress-tag" data-stress="同学关系">同学关系</button>
+              <button class="stress-tag" data-stress="运动">运动</button>
+              <button class="stress-tag" data-stress="休息">休息</button>
+            </div>
+            <button id="btn-save-mood" class="btn primary block">记录今天</button>
+          </div>
+
+          <div class="card">
+            <h3 class="card-title">情绪波动趋势（近 14 天）</h3>
+            <div id="chart-mood-line" class="chart"></div>
+          </div>
+
+          <div class="card">
+            <h3 class="card-title">压力来源分布</h3>
+            <div id="chart-mood-pie" class="chart"></div>
+          </div>
+
+          <div class="card ai-observe">
+            <h3 class="card-title">本周观察</h3>
+            <p id="mood-observation">最近低落多集中在刷题和熬夜之后，可以尝试把复习任务拆成 25 分钟一段。</p>
+          </div>
+
+          <div class="card">
+            <h3 class="card-title">情绪日历</h3>
+            <div id="mood-calendar" class="calendar"></div>
+          </div>
+        </div>
+
+        <!-- 模块 3：AI 好习惯计划 -->
+        <div id="mod-habit" class="sub-panel">
+          <div class="privacy-tag">本地保存 · 非攀比式治愈徽章</div>
+
+          <div class="card">
+            <h3 class="card-title">设定一个小目标</h3>
+            <input id="habit-goal" class="input" type="text" placeholder="例如：稳定考前复习 / 改善熬夜 / 减少拖延" />
+            <button id="btn-gen-habit" class="btn primary block">生成计划</button>
+          </div>
+
+          <div id="habit-result" class="card" hidden>
+            <div class="habit-head">
+              <h3 class="card-title" id="habit-goal-title">每日小任务</h3>
+              <div class="badge" id="habit-badge"><svg class="icon"><use href="#icon-sprout"/></svg> 稳定小芽</div>
+            </div>
+            <div class="progress-row">
+              <span id="habit-progress-text">今日完成 0 / 0</span>
+              <div class="progress-bar"><div id="habit-progress-fill"></div></div>
+            </div>
+            <div id="habit-tasks" class="task-list"></div>
+            <button id="btn-habit-remind" class="btn ghost block">温和提醒</button>
+            <p id="habit-remind-text" class="remind-text" hidden></p>
+          </div>
+        </div>
+
+        <!-- 模块 4：减压宝库 -->
+        <div id="mod-relax" class="sub-panel">
+          <div class="privacy-tag">放松工具 · 涂鸦与漂流瓶均为匿名</div>
+
+          <div class="card">
+            <h3 class="card-title">白噪音</h3>
+            <div class="noise-grid">
+              <div class="noise-card" data-noise="雨声">
+                <div class="noise-emoji"><svg class="icon"><use href="#icon-cloud-rain"/></svg></div>
+                <div class="noise-name">雨声</div>
+                <button class="btn ghost play-btn">播放</button>
+                <div class="timer-row">
+                  <button class="btn mini timer-btn" data-min="10">10分</button>
+                  <button class="btn mini timer-btn" data-min="15">15分</button>
+                  <button class="btn mini timer-btn" data-min="30">30分</button>
+                </div>
+              </div>
+              <div class="noise-card" data-noise="森林晚风">
+                <div class="noise-emoji"><svg class="icon"><use href="#icon-leaf"/></svg></div>
+                <div class="noise-name">森林晚风</div>
+                <button class="btn ghost play-btn">播放</button>
+                <div class="timer-row">
+                  <button class="btn mini timer-btn" data-min="10">10分</button>
+                  <button class="btn mini timer-btn" data-min="15">15分</button>
+                  <button class="btn mini timer-btn" data-min="30">30分</button>
+                </div>
+              </div>
+              <div class="noise-card" data-noise="校园轻音乐">
+                <div class="noise-emoji"><svg class="icon"><use href="#icon-music"/></svg></div>
+                <div class="noise-name">校园轻音乐</div>
+                <button class="btn ghost play-btn">播放</button>
+                <div class="timer-row">
+                  <button class="btn mini timer-btn" data-min="10">10分</button>
+                  <button class="btn mini timer-btn" data-min="15">15分</button>
+                  <button class="btn mini timer-btn" data-min="30">30分</button>
+                </div>
+              </div>
+            </div>
+            <div id="noise-countdown" class="countdown" hidden><svg class="icon"><use href="#icon-headphones"/></svg> 播放中 · 剩余 <span id="noise-time">10:00</span></div>
+          </div>
+
+          <div class="card">
+            <h3 class="card-title">心理微课堂</h3>
+            <div id="lesson-list" class="lesson-list"></div>
+          </div>
+
+          <div class="card">
+            <h3 class="card-title">情绪涂鸦板</h3>
+            <div class="doodle-tools">
+              <button class="color-btn active" data-color="#7FC8A9" style="background:#7FC8A9"></button>
+              <button class="color-btn" data-color="#FF9AA2" style="background:#FF9AA2"></button>
+              <button class="color-btn" data-color="#9EC9E8" style="background:#9EC9E8"></button>
+              <button class="color-btn" data-color="#FFD93D" style="background:#FFD93D"></button>
+              <button class="color-btn" data-color="#B89BE0" style="background:#B89BE0"></button>
+              <button id="btn-clear-doodle" class="btn ghost mini">清空</button>
+            </div>
+            <canvas id="doodle-canvas" width="320" height="240"></canvas>
+          </div>
+
+          <div class="card">
+            <h3 class="card-title">匿名漂流瓶</h3>
+            <p class="sub-label">投递一句烦恼，收到一条温暖鼓励</p>
+            <input id="bottle-input" class="input" type="text" placeholder="写下你此刻的烦恼……" />
+            <button id="btn-bottle-send" class="btn primary block">投递漂流瓶</button>
+            <div id="bottle-reply" class="bottle-reply" hidden></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 家长端 ============ -->
+      <section id="panel-parent" class="panel">
+        <div class="privacy-banner"><svg class="icon"><use href="#icon-lock"/></svg> 家长端只展示脱敏趋势，无法查看树洞原文</div>
+
+        <div class="card">
+          <h3 class="card-title">孩子近 14 天情绪趋势</h3>
+          <div id="chart-parent-line" class="chart"></div>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat"><span id="parent-low-days" class="stat-num">0</span><span class="stat-label">低落天数</span></div>
+          <div class="stat"><span id="parent-avg" class="stat-num">0</span><span class="stat-label">平均情绪</span></div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">主要压力来源</h3>
+          <div id="chart-parent-stress" class="chart"></div>
+        </div>
+
+        <div id="parent-warning" class="warning-box" hidden></div>
+
+        <div class="card">
+          <h3 class="card-title">亲子沟通建议</h3>
+          <ul id="parent-suggestions" class="suggestion-list"></ul>
+        </div>
+
+        <div class="card permission-card">
+          <label class="switch-label">
+            <span>允许家长查看脱敏趋势</span>
+            <span class="switch"><input type="checkbox" id="parent-permission-toggle" checked /><span class="slider"></span></span>
+          </label>
+          <p class="sub-label">由学生在学生端控制，关闭后家长端仅显示占位提示。</p>
+        </div>
+      </section>
+
+      <!-- ============ 教师端 ============ -->
+      <section id="panel-teacher" class="panel">
+        <div class="privacy-banner"><svg class="icon"><use href="#icon-lock"/></svg> 教师端只展示班级聚合趋势，无法查看单个学生私密内容</div>
+
+        <div class="card">
+          <h3 class="card-title">班级整体情绪趋势（近 14 天）</h3>
+          <div id="chart-teacher-trend" class="chart"></div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">常见压力主题分布</h3>
+          <div id="chart-teacher-topics" class="chart"></div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">班会活动建议</h3>
+          <ul id="teacher-suggestions" class="suggestion-list"></ul>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">匿名校园欺凌上报</h3>
+          <p class="sub-label">不强制填写姓名、学校、班级</p>
+          <input id="report-time" class="input" type="text" placeholder="发生时间（可选）" />
+          <input id="report-place" class="input" type="text" placeholder="发生地点（可选）" />
+          <textarea id="report-desc" class="input" rows="3" placeholder="情况描述"></textarea>
+          <label class="check-label"><input type="checkbox" id="report-contact" /> 希望老师联系我（可不留联系方式）</label>
+          <button id="btn-submit-report" class="btn primary block">匿名提交</button>
+          <p id="report-result" class="remind-text" hidden></p>
+        </div>
+      </section>
+
+      <!-- ============ 演示流 ============ -->
+      <section id="panel-demo" class="panel">
+        <div class="card demo-card">
+          <h3 class="card-title">演示流 · 按答辩顺序一键触发</h3>
+          <p class="sub-label">点击按钮自动跳转到对应端口并展示效果</p>
+          <button class="btn primary block demo-btn" data-demo="1"><span class="step-num">1</span> 模拟考试焦虑倾诉</button>
+          <button class="btn primary block demo-btn" data-demo="2"><span class="step-num">2</span> 生成情绪趋势报告</button>
+          <button class="btn primary block demo-btn" data-demo="3"><span class="step-num">3</span> 生成考前复习计划</button>
+          <button class="btn primary block demo-btn" data-demo="4"><span class="step-num">4</span> 打开减压宝库</button>
+          <button class="btn primary block demo-btn" data-demo="5"><span class="step-num">5</span> 切换家长端</button>
+          <button class="btn danger block demo-btn" data-demo="6"><span class="step-num">6</span> 触发高风险求助弹窗</button>
+          <button class="btn primary block demo-btn" data-demo="7"><span class="step-num">7</span> 打开匿名上报</button>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="app-footer">
+      <span>本 Demo 仅作演示，不做医疗诊断 · 数据保存在本地浏览器</span>
+    </footer>
+  </div>
+
+  <!-- ===== 高风险求助弹窗 ===== -->
+  <div id="crisis-modal" class="modal" hidden>
+    <div class="modal-mask"></div>
+    <div class="modal-box crisis-box">
+      <h2 class="crisis-title">我注意到你可能正在经历很强烈的痛苦</h2>
+      <p class="crisis-text">请先不要独自承受。建议立刻联系身边可信任的大人、学校心理老师，或当地紧急援助与心理支持热线。</p>
+      <p class="crisis-note">正式上线前请根据所在地区核验热线信息。</p>
+      <div class="crisis-actions">
+        <button class="btn primary block crisis-action" data-action="teacher">联系学校心理老师</button>
+        <button class="btn ghost block crisis-action" data-action="channel">查看求助渠道</button>
+        <button class="btn ghost block crisis-action" data-action="safe">我现在是安全的</button>
+      </div>
+      <p id="crisis-feedback" class="crisis-feedback" hidden></p>
+    </div>
+  </div>
+
+  <!-- ===== 一键求助面板 ===== -->
+  <div id="help-modal" class="modal" hidden>
+    <div class="modal-mask"></div>
+    <div class="modal-box">
+      <button class="modal-close" id="help-close">×</button>
+      <h2 class="modal-title">求助渠道</h2>
+      <ul class="help-list">
+        <li><svg class="icon"><use href="#icon-phone"/></svg> 联系身边可信任的大人</li>
+        <li><svg class="icon"><use href="#icon-school"/></svg> 联系学校心理老师</li>
+        <li><svg class="icon"><use href="#icon-phone"/></svg> 当地 24 小时心理援助热线（正式上线前需按地区核验）</li>
+        <li><svg class="icon"><use href="#icon-sos"/></svg> 紧急情况请联系当地急救与报警电话</li>
+        <li><svg class="icon"><use href="#icon-mail"/></svg> 匿名校园欺凌上报（教师端）</li>
+      </ul>
+      <p class="crisis-note">提醒：本 Demo 不提供真实诊断与紧急服务，请以当地官方信息为准。</p>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
