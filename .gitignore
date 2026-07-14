@@ -1,4 +1,17 @@
+# 敏感配置（密钥，绝不提交）
 .env
+
+# 日志
 *.log
-.md
-.png
+
+# 文档与截图（按你的意图忽略）
+*.md
+*.png
+记录图片/
+
+# 依赖与构建产物
+node_modules/
+.vercel/
+
+# Trae IDE 工作区目录
+.trae/
