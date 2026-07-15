@@ -1,7 +1,17 @@
 {
-  "functions": {
-    "api/treehole-chat.js": { "maxDuration": 10 },
-    "api/habit-plan.js": { "maxDuration": 10 },
-    "api/asr.js": { "maxDuration": 10 }
-  }
+  "version": 2,
+  "builds": [
+    { "src": "api/asr.js", "use": "@vercel/node", "config": { "maxDuration": 10 } },
+    { "src": "api/habit-plan.js", "use": "@vercel/node", "config": { "maxDuration": 10 } },
+    { "src": "api/treehole-chat.js", "use": "@vercel/node", "config": { "maxDuration": 10 } },
+    { "src": "index.html", "use": "@vercel/static" },
+    { "src": "style.css", "use": "@vercel/static" },
+    { "src": "script.js", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/style.css", "dest": "/style.css" },
+    { "src": "/script.js", "dest": "/script.js" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
 }
