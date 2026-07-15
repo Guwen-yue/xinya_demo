@@ -3,8 +3,7 @@
   "private": true,
   "description": "心芽守护 - 青少年 AI 情绪陪伴与成长守护",
   "scripts": {
-    "dev": "node server.js",
-    "start": "node server.js"
+    "dev": "node server.js"
   },
   "engines": {
     "node": ">=18"
