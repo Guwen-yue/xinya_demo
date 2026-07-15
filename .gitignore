@@ -12,6 +12,7 @@
 # 依赖与构建产物
 node_modules/
 .vercel/
+dist/
 
 # Trae IDE 工作区目录
 .trae/

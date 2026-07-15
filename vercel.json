@@ -4,8 +4,8 @@
     { "src": "index.html", "use": "@vercel/static" },
     { "src": "style.css", "use": "@vercel/static" },
     { "src": "script.js", "use": "@vercel/static" },
-    { "src": "api/treehole-chat.js", "use": "@vercel/node", "config": { "maxDuration": 60 } },
-    { "src": "api/habit-plan.js", "use": "@vercel/node", "config": { "maxDuration": 30 } },
-    { "src": "api/asr.js", "use": "@vercel/node", "config": { "maxDuration": 30 } }
+    { "src": "api/treehole-chat.js", "use": "@vercel/node", "config": { "maxDuration": 10 } },
+    { "src": "api/habit-plan.js", "use": "@vercel/node", "config": { "maxDuration": 10 } },
+    { "src": "api/asr.js", "use": "@vercel/node", "config": { "maxDuration": 10 } }
   ]
 }

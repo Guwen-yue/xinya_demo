@@ -43,7 +43,7 @@ module.exports = async (req, res) => {
     upstream = await fetch(`${API_BASE}/chat/completions`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: MODEL, messages, temperature: 0.6, top_p: 0.9, max_tokens: 400, stream: false })
+      body: JSON.stringify({ model: MODEL, messages, temperature: 0.6, top_p: 0.9, max_tokens: 256, stream: false })
     });
   } catch (e) {
     sendJson(res, 502, { error: 'upstream_unreachable', detail: String(e.message || e) });

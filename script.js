@@ -304,28 +304,33 @@
     const decoder = new TextDecoder('utf-8');
     let buffer = '';
     let full = '';
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      let idx;
-      while ((idx = buffer.indexOf('\n\n')) >= 0) {
-        const evt = buffer.slice(0, idx);
-        buffer = buffer.slice(idx + 2);
-        const line = evt.split('\n').map(s => s.trim()).find(s => s.startsWith('data:'));
-        if (!line) continue;
-        const payload = line.slice(5).trim();
-        if (payload === '[DONE]') continue;
-        try {
-          const obj = JSON.parse(payload);
-          if (obj.error) throw new Error(obj.error);
-          if (obj.meta && onMeta) onMeta(obj.meta);
-          if (obj.delta) { full += obj.delta; onChunk(full); }
-        } catch (e) {
-          if (e.message && e.message.indexOf('{') < 0) throw e;
-          // JSON 解析失败则跳过该行
+    try {
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let idx;
+        while ((idx = buffer.indexOf('\n\n')) >= 0) {
+          const evt = buffer.slice(0, idx);
+          buffer = buffer.slice(idx + 2);
+          const line = evt.split('\n').map(s => s.trim()).find(s => s.startsWith('data:'));
+          if (!line) continue;
+          const payload = line.slice(5).trim();
+          if (payload === '[DONE]') continue;
+          try {
+            const obj = JSON.parse(payload);
+            if (obj.error) throw new Error(obj.error);
+            if (obj.meta && onMeta) onMeta(obj.meta);
+            if (obj.delta) { full += obj.delta; onChunk(full); }
+          } catch (e) {
+            if (e.message && e.message.indexOf('{') < 0) throw e;
+          }
         }
       }
+    } catch (e) {
+      // Vercel Hobby 10s 强制断开或网络中断：已收到部分 LLM 内容则保留，不触发本地兜底覆盖
+      if (full) return full;
+      throw e;
     }
     return full;
   }
@@ -832,12 +837,17 @@
     btn.textContent = '生成中…';
 
     let plan = null;
+    // Vercel Hobby 10s 强制断开：前端 9s 主动 abort，快速走本地兜底
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 9000);
     try {
       const res = await fetch('/api/habit-plan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ goal })
+        body: JSON.stringify({ goal }),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
       if (!res.ok) throw new Error('habit-plan failed: ' + res.status);
       const data = await res.json();
       plan = {
@@ -849,6 +859,7 @@
         key: iconMatch.key
       };
     } catch (e) {
+      clearTimeout(timeoutId);
       console.warn('habit-plan LLM unavailable, fallback to local template:', e);
     }
 
